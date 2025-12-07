@@ -3,7 +3,7 @@ import { playAmbientAudio } from './audio.js';
 import { lightTorch, lightCenterTorch } from './torches.js';
 import { submitAnswer, nextDialogue, helpJordan, refuseHelp } from './dialogue.js';
 import { fixHeart } from './heart.js';
-import { stopDungeon, answerJennySound, handleMobileTouch, handleMobileDirection, nextLevel4Dialogue, submitLevel4Info, initDungeonLevel4, initDungeonLevel3 } from './dungeon.js';
+import { stopDungeon, answerJennySound, handleMobileTouch, handleMobileDirection, nextLevel4Dialogue, submitLevel4Info, initDungeonLevel4, initDungeonLevel3, initDungeon } from './dungeon.js';
 
 // Point d'entrée principal
 export function startGame() {

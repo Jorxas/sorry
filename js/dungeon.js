@@ -1055,16 +1055,8 @@ function draw() {
             const tileY = y * tileSize;
             
             if (map[y][x] === 1) {
-                // Mur - toujours utiliser les couleurs pour le niveau 2 pour garantir la visibilité
-                    ctx.fillStyle = '#3a0a0a';
-                    ctx.fillRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
-                    // Ajouter des détails pour plus de contraste
-                    ctx.fillStyle = '#8b0000';
-                    ctx.fillRect(tileX + 4, tileY + 4, 2, 2);
-                    ctx.fillRect(tileX + 10, tileY + 4, 2, 2);
-                    ctx.fillRect(tileX + 4, tileY + 10, 2, 2);
-                    ctx.fillRect(tileX + 10, tileY + 10, 2, 2);
-                } else if (currentLevel === 4) {
+                // Mur
+                if (currentLevel === 4) {
                     // Niveau 4 - murs normaux
                     ctx.fillStyle = '#2d1b1b';
                     ctx.fillRect(tileX, tileY, tileSize, tileSize);
