@@ -510,32 +510,31 @@ export function initDungeon() {
     }
     ctx.imageSmoothingEnabled = false;
     
-    // Aller directement au niveau 4 (dernier couloir)
-    currentLevel = 4;
-    // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
-    player.x = 14 * tileSize; // Colonne 14 (milieu)
-    player.y = 18 * tileSize; // En bas (ligne 18)
-    // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
-    blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
-    blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
-    // Positionner Jenny en haut au milieu
-    jenny.x = 14 * tileSize; // Colonne 14 (milieu)
-    jenny.y = 1 * tileSize; // En haut (ligne 1)
-    
-    // Réinitialiser les flags
+    // Réinitialiser au niveau 1 (donjon avec porte)
+    currentLevel = 1;
+    player.x = 32;
+    player.y = 32;
     jennySoundPlayed = false;
-    jennySoundHeard = true; // Permettre le mouvement directement
-    canMove = true;
-    traumaMessageShown = false;
-    level4DialogueStep = 0;
-    blackSquareCollisionHandled = false;
-    jennyLevel4Reached = false;
+    jennySoundHeard = false;
+    canMove = false; // Bloquer le mouvement jusqu'à la fin du dialogue
     
-    // Afficher les boutons pour mobile
+    // Afficher le message d'instruction et les boutons pour mobile au niveau 1
     const isMobileCheck = window.innerWidth <= 768;
     if (isMobileCheck) {
         setTimeout(() => {
+            const instructionMsg = document.getElementById('mobile-control-instruction');
             const dpad = document.getElementById('mobile-dpad');
+            if (currentLevel === 1) {
+                if (instructionMsg) {
+                    instructionMsg.classList.remove('hidden');
+                    // Masquer après 5 secondes ou au premier mouvement
+                    setTimeout(() => {
+                        if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
+                            instructionMsg.classList.add('hidden');
+                        }
+                    }, 5000);
+                }
+            }
             if (dpad) {
                 dpad.classList.remove('hidden');
                 // S'assurer que les boutons sont configurés
@@ -543,6 +542,17 @@ export function initDungeon() {
             }
         }, 500); // Attendre un peu pour que le canvas soit prêt
     }
+    
+    // Position de Jenny à la fin du labyrinthe
+    // Positionner Jenny au centre en bas du labyrinthe (deux chemins y mènent)
+    // Colonne 14-15 est accessible depuis deux chemins (gauche et droite)
+    jenny.x = 14 * tileSize + 2; // Centre horizontal avec petit offset
+    jenny.y = 18 * tileSize + 2; // Presque en bas (ligne 18) avec petit offset
+    
+    // Jouer le son de Jenny une fois au démarrage
+    setTimeout(() => {
+        playJennySound();
+    }, 1000); // Attendre 1 seconde avant de jouer le son
     
     // Ajouter les écouteurs de clavier
     window.addEventListener('keydown', (e) => {
@@ -758,9 +768,9 @@ export function initDungeonLevel4() {
     loop();
 }
 
-// Fonction pour changer de niveau (maintenant passe directement au niveau 4)
+// Fonction pour changer de niveau (passe du niveau 1 au niveau 4)
 function changeLevel() {
-    // Passer directement au niveau 4 (dernier couloir)
+    // Passer au niveau 4 (dernier couloir) après avoir traversé la porte du niveau 1
     currentLevel = 4;
     // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
     player.x = 14 * tileSize; // Colonne 14 (milieu)
@@ -1262,39 +1272,17 @@ function updateLevel4Dialogue() {
         dialogueText.innerText = "En plus t'excuser alors que tu n'as même pas tort, c'est un non-sens.";
         nextBtn.classList.remove('hidden');
     } else if (level4DialogueStep === 4) {
-        // Réponse de Jordan avec champ de saisie
-        dialogueText.innerText = "Jordan : C'est vrai tu as raison, elle n'a pas conscience de mes ...";
-        inputArea.classList.remove('hidden');
-        input.value = "";
-        input.focus();
-        // Le bouton CONTINUER est visible mais désactivé jusqu'à ce qu'elle tape quelque chose
-        nextBtn.classList.remove('hidden');
-        nextBtn.disabled = true;
-        nextBtn.style.opacity = '0.5';
-        nextBtn.style.cursor = 'not-allowed';
-        // Détecter quand l'utilisateur tape pour activer le bouton
-        input.oninput = function() {
-            if (input.value.trim().length > 0) {
-                nextBtn.disabled = false;
-                nextBtn.style.opacity = '1';
-                nextBtn.style.cursor = 'pointer';
-            } else {
-                nextBtn.disabled = true;
-                nextBtn.style.opacity = '0.5';
-                nextBtn.style.cursor = 'not-allowed';
-            }
-        };
-        input.onkeypress = function(e) {
-            if (e.key === 'Enter' && !nextBtn.disabled) {
-                checkLevel4Answer();
-            }
-        };
-    } else if (level4DialogueStep === 5) {
-        // Après la réponse correcte, afficher la question
-        dialogueText.innerText = "Jordan : C'est vrai tu as raison, elle n'a pas conscience de mes traumatismes et elle ne sait même rien sur moi.";
+        // Réponse de Jordan - plus besoin de compléter, juste continuer
+        dialogueText.innerText = "Jordan : C'est vrai tu as raison, elle n'a pas conscience de mon passé.";
         inputArea.classList.add('hidden');
         nextBtn.classList.remove('hidden');
-        // Réinitialiser le bouton (réactiver)
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
+    } else if (level4DialogueStep === 5) {
+        // Continuer avec le message suivant
+        dialogueText.innerText = "Jordan : Elle ne sait même rien sur moi.";
+        nextBtn.classList.remove('hidden');
         nextBtn.disabled = false;
         nextBtn.style.opacity = '1';
         nextBtn.style.cursor = 'pointer';
@@ -1388,9 +1376,7 @@ function updateLevel4Dialogue() {
 // Fonction pour passer au dialogue suivant
 export function nextLevel4Dialogue() {
     // Si on est à l'étape 4 (saisie), vérifier la réponse avant de continuer
-    if (level4DialogueStep === 4) {
-        checkLevel4Answer();
-    } else if (level4DialogueStep === 11) {
+    if (level4DialogueStep === 11) {
         // Rediriger vers WhatsApp
         window.location.href = 'https://wa.me/4915156684392';
     } else {
