@@ -378,8 +378,8 @@ function update() {
         return;
     }
     
-    // Ne pas permettre le mouvement si le message traumatisme est affiché (mais permettre au niveau 3)
-    // Au niveau 3, le joueur doit pouvoir se déplacer vers la porte
+    // Ne pas permettre le mouvement si le message traumatisme est affichï¿½ (mais permettre au niveau 3)
+    // Au niveau 3, le joueur doit pouvoir se dï¿½placer vers la porte
     if (currentLevel !== 3) {
         const traumaMsg = document.getElementById('trauma-message');
         const jordanDialogue = document.getElementById('jordan-dialogue-trauma');
@@ -679,7 +679,7 @@ function showTraumaMessage() {
                 currentLevel = 3;
                 // Repositionner le joueur en bas du labyrinthe (au centre)
                 player.x = 14 * tileSize; // Colonne 14 (libre)
-                player.y = 17 * tileSize; // Ligne 17 (libre, près du centre)
+                player.y = 17 * tileSize; // Ligne 17 (libre, prï¿½s du centre)
                 // Reprendre le jeu
                 loop();
             }, 2000);
