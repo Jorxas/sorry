@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réveil...</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="jumpscare-overlay" class="hidden">
+    <div id="jumpscare-text">TU MENS !</div>
+</div>
+
+<audio id="screamer-audio" preload="auto">
+    <source src="sound/scremeur.unknown" type="audio/mpeg">
+    <source src="sound/scremeur.unknown" type="audio/wav">
+    <source src="sound/scremeur.unknown" type="audio/ogg">
+    <source src="sound/scremeur.unknown" type="audio/mp3">
+</audio>
+
+<audio id="ambient-audio" preload="auto" loop>
+    <source src="sound/ambiance.unknown" type="audio/mpeg">
+    <source src="sound/ambiance.unknown" type="audio/wav">
+    <source src="sound/ambiance.unknown" type="audio/ogg">
+    <source src="sound/ambiance.unknown" type="audio/mp3">
+</audio>
+
+<audio id="cry-audio" preload="auto" loop>
+    <source src="sound/bruitpleurjenny.unknown" type="audio/mpeg">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/wav">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/ogg">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/mp3">
+</audio>
+
+<audio id="jenny-sound-audio" preload="auto">
+    <source src="sound/bruitjenny.unknown" type="audio/mpeg">
+    <source src="sound/bruitjenny.unknown" type="audio/wav">
+    <source src="sound/bruitjenny.unknown" type="audio/ogg">
+    <source src="sound/bruitjenny.unknown" type="audio/mp3">
+</audio>
+
+<audio id="jenny-cry-audio" preload="auto" loop>
+    <source src="sound/bruitpleurjenny.unknown" type="audio/mpeg">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/wav">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/ogg">
+    <source src="sound/bruitpleurjenny.unknown" type="audio/mp3">
+</audio>
+
+<div id="game-container">
+    
+    <!-- SCENE 0: INTRO -->
+    <div id="scene-intro" style="text-align: center;">
+        <p style="color: #666; font-size: 0.9rem;">(Mets le son pour une meilleure expérience)</p>
+        <button onclick="startGame()">COMMENCER</button>
+    </div>
+
+    <!-- SCENE 1: TORCHES -->
+    <div id="scene-torches" class="hidden">
+        <i class="fas fa-fire torch" id="t-tl" onclick="lightTorch('t-tl')"></i>
+        <i class="fas fa-fire torch" id="t-tr" onclick="lightTorch('t-tr')"></i>
+        <i class="fas fa-fire torch" id="t-bl" onclick="lightTorch('t-bl')"></i>
+        <i class="fas fa-fire torch" id="t-br" onclick="lightTorch('t-br')"></i>
+        <i class="fas fa-fire torch" id="t-center" onclick="lightCenterTorch()"></i>
+    </div>
+
+    <!-- SCENE 2 & 3: DIALOGUES -->
+    <div id="dialogue-box" class="hidden">
+        <h1 id="dialogue-title">...</h1>
+        <p id="dialogue-text"></p>
+        <div id="input-area" class="hidden">
+            <input type="text" id="user-input" autocomplete="off" placeholder="...">
+            <br>
+            <button onclick="submitAnswer()">RÉPONDRE</button>
+        </div>
+        <div id="next-btn-area" class="hidden">
+            <button onclick="nextDialogue()">CONTINUER</button>
+        </div>
+        <div id="choice-area" class="hidden">
+            <button onclick="helpJordan()">Aider Jordan</button>
+            <button onclick="refuseHelp()">Refuser</button>
+        </div>
+    </div>
+
+    <!-- SCENE 4: DUNGEON -->
+    <div id="scene-dungeon" class="hidden" style="text-align: center;">
+        <canvas id="dungeonCanvas" style="border: 2px solid #8b0000; background: #000; max-width: 100%; height: auto;"></canvas>
+        
+        <!-- Boutons de contrôle tactiles pour mobile -->
+        <div id="mobile-controls" class="mobile-only">
+            <div class="dpad-container">
+                <button class="dpad-btn" id="btn-up" ontouchstart="handleMobileTouch('ArrowUp', true)" ontouchend="handleMobileTouch('ArrowUp', false)">↑</button>
+                <div class="dpad-row">
+                    <button class="dpad-btn" id="btn-left" ontouchstart="handleMobileTouch('ArrowLeft', true)" ontouchend="handleMobileTouch('ArrowLeft', false)">←</button>
+                    <button class="dpad-btn" id="btn-down" ontouchstart="handleMobileTouch('ArrowDown', true)" ontouchend="handleMobileTouch('ArrowDown', false)">↓</button>
+                    <button class="dpad-btn" id="btn-right" ontouchstart="handleMobileTouch('ArrowRight', true)" ontouchend="handleMobileTouch('ArrowRight', false)">→</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dialogue Jordan dans le donjon -->
+        <div id="dungeon-dialogue" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 500px; z-index: 1000;">
+            <p id="dungeon-dialogue-text" style="color: #e0e0e0; margin-bottom: 15px; font-family: 'Special Elite', monospace;">Jordan : Tu as entendu ça ?</p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button onclick="answerJennySound(true)" style="background: #222; border: 1px solid #444; color: white; padding: 10px 20px; font-family: 'Special Elite', monospace; cursor: pointer; transition: background 0.3s;">Oui</button>
+                <button onclick="answerJennySound(false)" style="background: #222; border: 1px solid #444; color: white; padding: 10px 20px; font-family: 'Special Elite', monospace; cursor: pointer; transition: background 0.3s;">Non</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCENE 5: FINAL HEART -->
+    <div id="scene-heart" class="hidden" style="text-align: center;">
+        <p>Ma fierté a obscurci mon cœur. <br>Clique dessus pour briser la glace.</p>
+        <i class="fas fa-heart-crack" id="heart-container" onclick="fixHeart()"></i>
+        <p id="click-counter" style="color: #555; margin-top: 10px;"></p>
+    </div>
+
+    <!-- SCENE 6: APOLOGY LETTER -->
+    <div id="final-letter" class="hidden">
+        <h2>Pardon...</h2>
+        <p>Je ne voulais pas qu'on en arrive là. Cette dispute, c'était comme ce jeu : sombre, flou, et effrayant.</p>
+        <p>Tu es importante pour moi. Je suis désolé pour ce que j'ai dit/fait.</p>
+        <p>Est-ce qu'on peut rallumer la lumière ensemble ?</p>
+        <div style="text-align: right; margin-top: 20px; font-weight: bold;">
+            - Ton pote (le beau gosse de 1m92)
+        </div>
+        <button onclick="location.reload()" style="background: #fff; color: #222; border: 1px solid #ccc; margin-top: 20px;">Recommencer</button>
+    </div>
+
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

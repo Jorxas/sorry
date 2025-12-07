@@ -1,0 +1,53 @@
+/* --- SCENE 2: DIALOGUE & INPUT --- */
+#dialogue-box {
+    text-align: center;
+    max-width: 600px;
+    padding: 20px;
+    z-index: 10;
+    transition: opacity 0.5s ease-in-out;
+}
+
+h1 {
+    font-family: 'Creepster', cursive;
+    font-size: 3rem;
+    color: var(--accent-color);
+    text-shadow: 2px 2px 5px black;
+}
+
+p { font-size: 1.2rem; line-height: 1.6; }
+
+input[type="text"] {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--accent-color);
+    color: white;
+    font-family: 'Special Elite', monospace;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 20px;
+    outline: none;
+    width: 80%;
+}
+
+button {
+    margin-top: 20px;
+    background: #222;
+    border: 1px solid #444;
+    color: white;
+    padding: 10px 20px;
+    font-family: 'Special Elite', monospace;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+button:hover { background: var(--accent-color); }
+
+#choice-area {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+#choice-area button {
+    margin-top: 0;
+}
+

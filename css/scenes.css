@@ -1,0 +1,179 @@
+/* --- SCENE 1: TORCHES --- */
+.torch {
+    position: absolute;
+    font-size: 3rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+    opacity: 0.7;
+}
+
+.torch:hover {
+    opacity: 1;
+    color: #999;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.torch.lit {
+    color: var(--light-color);
+    filter: drop-shadow(0 0 20px orange);
+    animation: flicker 1s infinite alternate;
+    opacity: 1 !important;
+}
+
+#t-tl { top: 10%; left: 10%; }
+#t-tr { top: 10%; right: 10%; }
+#t-bl { bottom: 10%; left: 10%; }
+#t-br { bottom: 10%; right: 10%; }
+#t-center { 
+    top: 50%; left: 50%; 
+    transform: translate(-50%, -50%); 
+    font-size: 5rem;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+/* --- SCENE 3: JUMPSCARE --- */
+#jumpscare-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: red;
+    background-image: url('https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'); /* Scary texture */
+    background-blend-mode: multiply;
+    background-size: cover;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#jumpscare-text {
+    font-family: 'Creepster', cursive;
+    font-size: 8rem;
+    color: black;
+    animation: shake 0.1s infinite;
+}
+
+/* --- SCENE 4: FINAL PUZZLE (HEART) --- */
+#heart-container {
+    font-size: 8rem;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.5s;
+}
+#heart-container.fixed {
+    color: #d63031;
+    animation: beat 1s infinite;
+}
+
+/* --- SCENE 5: APOLOGY --- */
+#final-letter {
+    background: white;
+    color: #222;
+    padding: 40px;
+    border-radius: 5px;
+    box-shadow: 0 0 50px rgba(255,255,255,0.2);
+    font-family: 'Montserrat', sans-serif;
+    max-width: 500px;
+    text-align: left;
+}
+#final-letter h2 { color: #d63031; font-family: 'Special Elite'; margin-top:0; }
+
+/* --- SCENE 4: DUNGEON --- */
+#scene-dungeon {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+#scene-dungeon:not(.hidden) {
+    opacity: 1;
+}
+
+#dungeonCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
+    image-rendering: pixelated; /* Rendu pixelisé style Game Boy */
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* Boutons de contrôle mobile */
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-only {
+        display: block;
+    }
+    
+    #dungeonCanvas {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+    }
+    
+    #mobile-controls {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
+    }
+    
+    .dpad-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .dpad-row {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .dpad-btn {
+        width: 60px;
+        height: 60px;
+        background: rgba(139, 0, 0, 0.8);
+        border: 2px solid #8b0000;
+        border-radius: 10px;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+    
+    .dpad-btn:active {
+        background: rgba(139, 0, 0, 1);
+        transform: scale(0.95);
+    }
+    
+    #dungeon-dialogue {
+        max-width: 90vw !important;
+        bottom: 100px !important;
+    }
+    
+    #scene-dungeon {
+        position: relative;
+        overflow: hidden;
+    }
+}
+
