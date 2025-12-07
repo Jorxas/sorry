@@ -100,18 +100,6 @@
         
         <canvas id="dungeonCanvas" style="border: 2px solid #8b0000; background: #000; max-width: 100%; height: auto;"></canvas>
         
-        <!-- Boutons de contrôle tactiles pour mobile -->
-        <div id="mobile-controls" class="mobile-only">
-            <div class="dpad-container">
-                <button class="dpad-btn" id="btn-up" ontouchstart="handleMobileTouch('ArrowUp', true)" ontouchend="handleMobileTouch('ArrowUp', false)">↑</button>
-                <div class="dpad-row">
-                    <button class="dpad-btn" id="btn-left" ontouchstart="handleMobileTouch('ArrowLeft', true)" ontouchend="handleMobileTouch('ArrowLeft', false)">←</button>
-                    <button class="dpad-btn" id="btn-down" ontouchstart="handleMobileTouch('ArrowDown', true)" ontouchend="handleMobileTouch('ArrowDown', false)">↓</button>
-                    <button class="dpad-btn" id="btn-right" ontouchstart="handleMobileTouch('ArrowRight', true)" ontouchend="handleMobileTouch('ArrowRight', false)">→</button>
-                </div>
-            </div>
-        </div>
-        
         <!-- Dialogue Jordan dans le donjon -->
         <div id="dungeon-dialogue" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 500px; z-index: 1000;">
             <p id="dungeon-dialogue-text" style="color: #e0e0e0; margin-bottom: 15px; font-family: 'Special Elite', monospace;">Jordan : Tu as entendu ça ?</p>

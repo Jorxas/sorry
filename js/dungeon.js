@@ -183,6 +183,78 @@ function playDoorSound() {
 }
 
 // Fonction pour gérer les touches mobiles
+// Variables pour les contrôles tactiles par glissement
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+// Fonction pour gérer les contrôles tactiles par glissement
+function setupTouchControls() {
+    if (!canvas) return;
+    
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    }, { passive: false });
+    
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        touchEndX = touch.clientX;
+        touchEndY = touch.clientY;
+        
+        handleSwipe();
+    }, { passive: false });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+}
+
+function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    const minSwipeDistance = 30; // Distance minimale pour détecter un glissement
+    
+    // Réinitialiser toutes les touches
+    keys['ArrowUp'] = false;
+    keys['ArrowDown'] = false;
+    keys['ArrowLeft'] = false;
+    keys['ArrowRight'] = false;
+    
+    // Détecter la direction du glissement
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // Glissement horizontal
+        if (Math.abs(deltaX) > minSwipeDistance) {
+            if (deltaX > 0) {
+                keys['ArrowRight'] = true;
+            } else {
+                keys['ArrowLeft'] = true;
+            }
+        }
+    } else {
+        // Glissement vertical
+        if (Math.abs(deltaY) > minSwipeDistance) {
+            if (deltaY > 0) {
+                keys['ArrowDown'] = true;
+            } else {
+                keys['ArrowUp'] = true;
+            }
+        }
+    }
+    
+    // Réinitialiser après un court délai pour permettre le mouvement continu
+    setTimeout(() => {
+        keys['ArrowUp'] = false;
+        keys['ArrowDown'] = false;
+        keys['ArrowLeft'] = false;
+        keys['ArrowRight'] = false;
+    }, 100);
+}
+
 export function handleMobileTouch(key, isPressed) {
     keys[key] = isPressed;
     // Empêcher le comportement par défaut
@@ -380,6 +452,9 @@ export function initDungeon() {
     // Vérifier l'orientation au chargement
     checkOrientation();
     
+    // Configurer les contrôles tactiles pour mobile
+    setupTouchControls();
+    
     dungeonInitialized = true;
     
     if (imagesLoaded === totalImages) {
@@ -458,6 +533,9 @@ export function initDungeonLevel3() {
     
     // Vérifier l'orientation au chargement
     checkOrientation();
+    
+    // Configurer les contrôles tactiles pour mobile
+    setupTouchControls();
     
     // Marquer le donjon comme initialisé
     dungeonInitialized = true;
@@ -542,6 +620,9 @@ export function initDungeonLevel4() {
     
     // Vérifier l'orientation au chargement
     checkOrientation();
+    
+    // Configurer les contrôles tactiles pour mobile
+    setupTouchControls();
     
     // Marquer le donjon comme initialisé
     dungeonInitialized = true;
