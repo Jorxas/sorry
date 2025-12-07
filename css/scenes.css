@@ -111,16 +111,6 @@
 }
 
 @media (max-width: 768px) {
-    #dungeonCanvas {
-        width: 100vw !important;
-        height: 100vh !important;
-        object-fit: contain !important;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        border: none !important;
-    }
-    
     #scene-dungeon {
         padding: 0;
         margin: 0;
@@ -130,6 +120,19 @@
         top: 0;
         left: 0;
         touch-action: none; /* Empêcher le scroll par défaut */
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #dungeonCanvas {
+        width: 100vw !important;
+        height: calc(100vh - 180px) !important; /* Prend tout l'écran moins l'espace pour les boutons */
+        object-fit: cover !important;
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        border: none !important;
+        flex: 1;
     }
     
     #dungeon-dialogue {
@@ -141,15 +144,35 @@
     
     #mobile-dpad {
         display: block !important;
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 1500 !important;
+        background: rgba(0, 0, 0, 0.7) !important;
+        padding: 15px !important;
+        border-radius: 15px !important;
+        border: 2px solid rgba(139, 0, 0, 0.8) !important;
+        backdrop-filter: blur(10px) !important;
     }
     
     .mobile-dpad-btn {
-        transition: background 0.2s, transform 0.1s;
+        transition: background 0.2s, transform 0.1s, box-shadow 0.2s !important;
+        background: rgba(139, 0, 0, 0.6) !important;
+        border: 2px solid rgba(139, 0, 0, 0.9) !important;
+        color: white !important;
+        box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4) !important;
     }
     
     .mobile-dpad-btn:active {
+        background: rgba(139, 0, 0, 0.9) !important;
+        transform: scale(0.95) !important;
+        box-shadow: 0 1px 4px rgba(139, 0, 0, 0.6) !important;
+    }
+    
+    .mobile-dpad-btn:hover {
         background: rgba(139, 0, 0, 0.8) !important;
-        transform: scale(0.95);
+        box-shadow: 0 4px 12px rgba(139, 0, 0, 0.6) !important;
     }
 }
 
