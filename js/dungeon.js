@@ -387,6 +387,85 @@ export function initDungeon() {
     }
 }
 
+// Fonction pour initialiser directement le niveau 3 (labyrinthe avec porte)
+export function initDungeonLevel3() {
+    canvas = document.getElementById('dungeonCanvas');
+    if (!canvas) {
+        console.error("Canvas du donjon non trouvé");
+        return;
+    }
+    
+    ctx = canvas.getContext('2d');
+    
+    // Adapter la taille du canvas selon l'appareil
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        if (window.innerHeight < window.innerWidth) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        } else {
+            canvas.width = window.innerHeight;
+            canvas.height = window.innerWidth;
+        }
+    } else {
+        canvas.width = 480;
+        canvas.height = 320;
+    }
+    ctx.imageSmoothingEnabled = false;
+    
+    // Aller directement au niveau 3 (labyrinthe avec porte)
+    currentLevel = 3;
+    // Repositionner le joueur en bas du labyrinthe (sur une case libre)
+    // Dans labyrinthMapWithDoor, ligne 18 colonne 14 est un mur, utiliser colonne 13 ou 15
+    player.x = 13 * tileSize; // Colonne 13 (libre à la ligne 18)
+    player.y = 18 * tileSize; // Ligne 18 (libre)
+    
+    // Réinitialiser les flags
+    jennySoundPlayed = false;
+    jennySoundHeard = true; // Permettre le mouvement directement
+    canMove = true;
+    traumaMessageShown = false;
+    level4DialogueStep = 0;
+    blackSquareCollisionHandled = false;
+    jennyLevel4Reached = false;
+    
+    // Ajouter les écouteurs de clavier
+    window.addEventListener('keydown', (e) => {
+        keys[e.key] = true;
+    });
+    
+    window.addEventListener('keyup', (e) => {
+        keys[e.key] = false;
+    });
+    
+    // Gérer le redimensionnement de la fenêtre
+    window.addEventListener('resize', () => {
+        if (canvas && dungeonInitialized) {
+            const isMobile = window.innerWidth <= 768;
+            if (isMobile) {
+                const isPortrait = window.innerHeight > window.innerWidth;
+                if (!isPortrait) {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+            } else {
+                canvas.width = 480;
+                canvas.height = 320;
+            }
+            checkOrientation();
+        }
+    });
+    
+    // Vérifier l'orientation au chargement
+    checkOrientation();
+    
+    // Marquer le donjon comme initialisé
+    dungeonInitialized = true;
+    
+    // Démarrer la boucle de jeu directement
+    loop();
+}
+
 // Fonction pour initialiser directement le niveau 4 (dernier couloir)
 export function initDungeonLevel4() {
     canvas = document.getElementById('dungeonCanvas');
@@ -464,19 +543,20 @@ export function initDungeonLevel4() {
     // Vérifier l'orientation au chargement
     checkOrientation();
     
+    // Marquer le donjon comme initialisé
     dungeonInitialized = true;
     
-    if (imagesLoaded === totalImages) {
-        loop();
-    }
+    // Démarrer la boucle de jeu directement (pas besoin d'attendre les images pour le niveau 4)
+    loop();
 }
 
 // Fonction pour changer de niveau
 function changeLevel() {
     currentLevel = 2;
-    // Position de départ dans le labyrinthe (en haut à gauche)
-    player.x = 16;
-    player.y = 16;
+    // Position de départ dans le labyrinthe (en haut à gauche, sur une case libre)
+    // Colonne 1, ligne 1 est libre dans labyrinthMap
+    player.x = 1 * tileSize;
+    player.y = 1 * tileSize;
     
     // Arrêter le son de Jenny si il joue encore
     if (jennySoundAudio) {
@@ -665,8 +745,11 @@ function update() {
     
     // Note: La détection de collision avec le carré noir est maintenant gérée dans le code de prévention de mouvement
     // (lignes 584-603) pour éviter que le joueur ne puisse jamais déclencher le dialogue
-        
-        // Vérifier si on atteint Jenny à la fin
+    
+    // Vérifier si on atteint Jenny à la fin dans le niveau 4
+    if (currentLevel === 4) {
+        const playerCenterX = player.x + player.size / 2;
+        const playerCenterY = player.y + player.size / 2;
         const jennyCenterX = jenny.x + jenny.size / 2;
         const jennyCenterY = jenny.y + jenny.size / 2;
         
@@ -908,9 +991,10 @@ function showTraumaMessage() {
                 
                 // Changer au niveau 3 avec la porte
                 currentLevel = 3;
-                // Repositionner le joueur en bas du labyrinthe (au centre)
-                player.x = 14 * tileSize; // Colonne 14 (libre)
-                player.y = 17 * tileSize; // Ligne 17 (libre, pr�s du centre)
+                // Repositionner le joueur en bas du labyrinthe (sur une case libre)
+                // Dans labyrinthMapWithDoor, ligne 18 colonne 14 est un mur, utiliser colonne 13
+                player.x = 13 * tileSize; // Colonne 13 (libre à la ligne 18)
+                player.y = 18 * tileSize; // Ligne 18 (libre)�s du centre)
                 // Reprendre le jeu
                 loop();
             }, 2000);
