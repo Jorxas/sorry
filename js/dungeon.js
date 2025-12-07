@@ -239,6 +239,10 @@ function setupTouchControls() {
     
     // Gérer les touches tactiles
     dungeonScene.addEventListener('touchstart', (e) => {
+        // Ne pas empêcher si on clique sur un bouton D-pad
+        if (e.target && e.target.closest('#mobile-dpad')) {
+            return;
+        }
         e.preventDefault();
         const touch = e.touches[0];
         handleClickOrTouch(touch.clientX, touch.clientY);
@@ -246,13 +250,204 @@ function setupTouchControls() {
     
     // Gérer les clics souris (pour desktop aussi)
     canvas.addEventListener('click', (e) => {
+        // Ne pas empêcher si on clique sur un bouton D-pad
+        if (e.target && e.target.closest('#mobile-dpad')) {
+            return;
+        }
         e.preventDefault();
         handleClickOrTouch(e.clientX, e.clientY);
     }, { passive: false });
     
     dungeonScene.addEventListener('touchmove', (e) => {
+        // Ne pas empêcher si on touche un bouton D-pad
+        if (e.target && e.target.closest('#mobile-dpad')) {
+            return;
+        }
         e.preventDefault();
     }, { passive: false });
+    
+    // Configurer les boutons D-pad avec des gestionnaires d'événements
+    setupDpadButtons();
+}
+
+// Fonction pour configurer les boutons D-pad
+function setupDpadButtons() {
+    console.log('setupDpadButtons appelé');
+    const btnUp = document.getElementById('mobile-btn-up');
+    const btnDown = document.getElementById('mobile-btn-down');
+    const btnLeft = document.getElementById('mobile-btn-left');
+    const btnRight = document.getElementById('mobile-btn-right');
+    
+    console.log('Boutons trouvés:', { btnUp: !!btnUp, btnDown: !!btnDown, btnLeft: !!btnLeft, btnRight: !!btnRight });
+    
+    // Fonction helper pour créer les gestionnaires d'événements
+    const createButtonHandlers = (button, key) => {
+        if (!button) return;
+        
+        // Supprimer les anciens gestionnaires en clonant le bouton
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        // Ajouter les nouveaux gestionnaires
+        newButton.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Touchstart sur', key);
+            handleMobileDirection(key, true);
+        }, { passive: false });
+        
+        newButton.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Touchend sur', key);
+            handleMobileDirection(key, false);
+        }, { passive: false });
+        
+        newButton.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Touchcancel sur', key);
+            handleMobileDirection(key, false);
+        }, { passive: false });
+        
+        newButton.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Mousedown sur', key);
+            handleMobileDirection(key, true);
+        });
+        
+        newButton.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Mouseup sur', key);
+            handleMobileDirection(key, false);
+        });
+        
+        newButton.addEventListener('mouseleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Mouseleave sur', key);
+            handleMobileDirection(key, false);
+        });
+    };
+    
+    createButtonHandlers(btnUp, 'ArrowUp');
+    createButtonHandlers(btnDown, 'ArrowDown');
+    createButtonHandlers(btnLeft, 'ArrowLeft');
+    createButtonHandlers(btnRight, 'ArrowRight');
+}
+
+function handleClickOrTouch(clientX, clientY) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowUp', true);
+        }, { passive: false });
+        btnUp.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowUp', false);
+        }, { passive: false });
+        btnUp.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowUp', true);
+        });
+        btnUp.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowUp', false);
+        });
+        btnUp.addEventListener('mouseleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowUp', false);
+        });
+    }
+    
+    if (btnDown) {
+        btnDown.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowDown', true);
+        }, { passive: false });
+        btnDown.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowDown', false);
+        }, { passive: false });
+        btnDown.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowDown', true);
+        });
+        btnDown.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowDown', false);
+        });
+        btnDown.addEventListener('mouseleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowDown', false);
+        });
+    }
+    
+    if (btnLeft) {
+        btnLeft.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowLeft', true);
+        }, { passive: false });
+        btnLeft.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowLeft', false);
+        }, { passive: false });
+        btnLeft.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowLeft', true);
+        });
+        btnLeft.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowLeft', false);
+        });
+        btnLeft.addEventListener('mouseleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowLeft', false);
+        });
+    }
+    
+    if (btnRight) {
+        btnRight.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowRight', true);
+        }, { passive: false });
+        btnRight.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowRight', false);
+        }, { passive: false });
+        btnRight.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowRight', true);
+        });
+        btnRight.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowRight', false);
+        });
+        btnRight.addEventListener('mouseleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMobileDirection('ArrowRight', false);
+        });
+    }
 }
 
 function handleClickOrTouch(clientX, clientY) {
@@ -293,6 +488,7 @@ export function handleMobileTouch(key, isPressed) {
 
 // Fonction pour gérer les boutons de direction mobile
 export function handleMobileDirection(key, isPressed) {
+    console.log('handleMobileDirection appelé:', key, isPressed);
     keys[key] = isPressed;
     // Arrêter le mouvement vers la cible si on utilise les boutons
     if (isPressed) {
@@ -457,6 +653,8 @@ export function initDungeon() {
             }
             if (dpad) {
                 dpad.classList.remove('hidden');
+                // S'assurer que les boutons sont configurés
+                setupDpadButtons();
             }
         }, 500); // Attendre un peu pour que le canvas soit prêt
     }
@@ -553,6 +751,8 @@ export function initDungeonLevel3() {
         const dpad = document.getElementById('mobile-dpad');
         if (dpad) {
             dpad.classList.remove('hidden');
+            // S'assurer que les boutons sont configurés
+            setupDpadButtons();
         }
     }
     
@@ -642,6 +842,8 @@ export function initDungeonLevel4() {
         const dpad = document.getElementById('mobile-dpad');
         if (dpad) {
             dpad.classList.remove('hidden');
+            // S'assurer que les boutons sont configurés
+            setupDpadButtons();
         }
     }
     
