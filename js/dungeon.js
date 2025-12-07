@@ -46,6 +46,8 @@ const blackSquare = {
     x: 0,
     y: 0,
     size: 12,
+    width: 3, // Largeur en tiles (3 carrés)
+    height: 1, // Hauteur en tiles (1 carré)
     color: '#000000' // Noir
 };
 
@@ -415,8 +417,8 @@ export function initDungeonLevel4() {
     // Repositionner le joueur au milieu horizontalement, en bas verticalement
     player.x = 14 * tileSize; // Milieu horizontal (colonne 14)
     player.y = 18 * tileSize; // En bas (ligne 18)
-    // Positionner le carré noir au milieu vertical
-    blackSquare.x = 14 * tileSize; // Milieu horizontal
+    // Positionner le carré noir au milieu vertical (prend 3 carrés de largeur)
+    blackSquare.x = 13 * tileSize; // Commence à la colonne 13 (prend 13, 14, 15)
     blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
     // Positionner Jenny en haut au milieu
     jenny.x = 14 * tileSize; // Milieu horizontal
@@ -575,7 +577,30 @@ function update() {
         // Vérifier les collisions avec les murs et blocs rouges
         // Le centre doit être libre, et au moins 3 des 4 coins doivent être libres
         const freeCorners = [tile1, tile2, tile3, tile4].filter(t => t !== 1 && t !== 2 && t !== 3).length;
-        const canPass = (centerTile !== 1 && centerTile !== 2 && centerTile !== 3) && freeCorners >= 3;
+        let canPass = (centerTile !== 1 && centerTile !== 2 && centerTile !== 3) && freeCorners >= 3;
+        
+        // Vérifier la collision avec le carré noir dans le niveau 4 (avant de permettre le mouvement)
+        if (canPass && currentLevel === 4) {
+            const blackWidth = blackSquare.width * tileSize;
+            const blackHeight = blackSquare.height * tileSize;
+            const playerLeft = newX;
+            const playerRight = newX + player.size;
+            const playerTop = newY;
+            const playerBottom = newY + player.size;
+            
+            const blackLeft = blackSquare.x;
+            const blackRight = blackSquare.x + blackWidth;
+            const blackTop = blackSquare.y;
+            const blackBottom = blackSquare.y + blackHeight;
+            
+            // Collision AABB - si collision, bloquer le mouvement
+            const wouldCollide = !(playerRight < blackLeft || playerLeft > blackRight || playerBottom < blackTop || playerTop > blackBottom);
+            
+            if (wouldCollide && !blackSquareCollisionHandled) {
+                // Bloquer le mouvement si on n'a pas encore déclenché le dialogue
+                canPass = false;
+            }
+        }
         
         if (canPass) {
             player.x = newX;
@@ -619,8 +644,8 @@ function update() {
                 // Repositionner le joueur au milieu horizontalement, en bas verticalement
                 player.x = 14 * tileSize; // Milieu horizontal (colonne 14)
                 player.y = 18 * tileSize; // En bas (ligne 18)
-                // Positionner le carré noir au milieu vertical
-                blackSquare.x = 14 * tileSize; // Milieu horizontal
+                // Positionner le carré noir au milieu vertical (prend 3 carrés de largeur)
+                blackSquare.x = 13 * tileSize; // Commence à la colonne 13 (prend 13, 14, 15)
                 blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
                 // Positionner Jenny en haut au milieu
                 jenny.x = 14 * tileSize; // Milieu horizontal
@@ -633,16 +658,26 @@ function update() {
     if (currentLevel === 4) {
         const playerCenterX = player.x + player.size / 2;
         const playerCenterY = player.y + player.size / 2;
-        const blackCenterX = blackSquare.x + blackSquare.size / 2;
-        const blackCenterY = blackSquare.y + blackSquare.size / 2;
+        const blackWidth = blackSquare.width * tileSize;
+        const blackHeight = blackSquare.height * tileSize;
+        const blackCenterX = blackSquare.x + blackWidth / 2;
+        const blackCenterY = blackSquare.y + blackHeight / 2;
         
-        const distance = Math.sqrt(
-            Math.pow(playerCenterX - blackCenterX, 2) + Math.pow(playerCenterY - blackCenterY, 2)
-        );
+        // Vérifier la collision avec un rectangle (le carré noir fait 3 tiles de large)
+        const playerLeft = player.x;
+        const playerRight = player.x + player.size;
+        const playerTop = player.y;
+        const playerBottom = player.y + player.size;
         
-        const collisionDistance = (player.size + blackSquare.size) / 2 + 4;
+        const blackLeft = blackSquare.x;
+        const blackRight = blackSquare.x + blackWidth;
+        const blackTop = blackSquare.y;
+        const blackBottom = blackSquare.y + blackHeight;
         
-        if (distance <= collisionDistance && !blackSquareCollisionHandled) {
+        // Collision AABB (Axis-Aligned Bounding Box)
+        const isColliding = !(playerRight < blackLeft || playerLeft > blackRight || playerBottom < blackTop || playerTop > blackBottom);
+        
+        if (isColliding && !blackSquareCollisionHandled) {
             // Collision avec le carré noir - démarrer le dialogue
             blackSquareCollisionHandled = true;
             // Ne pas arrêter le jeu, juste afficher le dialogue
@@ -835,12 +870,14 @@ function draw() {
     
     // Dessiner le carré noir et Jenny si on est dans le niveau 4
     if (currentLevel === 4) {
-        // Dessiner le carré noir au milieu
+        // Dessiner le carré noir au milieu (3 tiles de largeur)
+        const blackWidth = blackSquare.width * tileSize;
+        const blackHeight = blackSquare.height * tileSize;
         ctx.fillStyle = blackSquare.color;
-        ctx.fillRect(blackSquare.x, blackSquare.y, blackSquare.size, blackSquare.size);
+        ctx.fillRect(blackSquare.x, blackSquare.y, blackWidth, blackHeight);
         ctx.strokeStyle = '#333';
         ctx.lineWidth = 1;
-        ctx.strokeRect(blackSquare.x, blackSquare.y, blackSquare.size, blackSquare.size);
+        ctx.strokeRect(blackSquare.x, blackSquare.y, blackWidth, blackHeight);
         
         // Dessiner Jenny à la fin
         drawJenny();
@@ -1035,11 +1072,11 @@ function updateLevel4Dialogue() {
         nextBtn.style.opacity = '1';
         nextBtn.style.cursor = 'pointer';
     } else if (level4DialogueStep === 10) {
-        // Afficher le message d'excuse complet
+        // Afficher le message d'excuse reformulé et plus sincère
         dialogueText.innerHTML = `
             <h2 style="color: #d63031; font-family: 'Special Elite', monospace; margin-top: 0;">Pardon...</h2>
             <p style="color: #e0e0e0; font-family: 'Special Elite', monospace; font-size: 1.1rem; margin: 10px 0;">
-                Je ne voulais pas qu'on en arrive là. Cette dispute, c'était comme ce jeu : sombre, flou, et effrayant.
+                Je m'excuse pour t'avoir fait surréagir en me ressassant le passé. C'est quelque chose qui ne m'est certes pas arrivé, mais que je vois beaucoup dans mon entourage.
             </p>
             <p style="color: #e0e0e0; font-family: 'Special Elite', monospace; font-size: 1.1rem; margin: 10px 0;">
                 Tu es importante pour moi. Je suis désolé pour ce que j'ai dit/fait.
@@ -1059,6 +1096,21 @@ function updateLevel4Dialogue() {
         nextBtn.disabled = false;
         nextBtn.style.opacity = '1';
         nextBtn.style.cursor = 'pointer';
+    } else if (level4DialogueStep === 11) {
+        // Demander si le joueur veut continuer le jeu
+        dialogueText.innerHTML = `
+            <p style="color: #e0e0e0; font-family: 'Special Elite', monospace; font-size: 1.2rem; margin: 20px 0;">
+                Veux-tu continuer le jeu ?
+            </p>
+        `;
+        const continueBtn = document.getElementById('level4-continue-btn');
+        if (continueBtn) {
+            continueBtn.innerText = "CONTINUER";
+        }
+        nextBtn.classList.remove('hidden');
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
     }
 }
 
@@ -1067,6 +1119,9 @@ export function nextLevel4Dialogue() {
     // Si on est à l'étape 4 (saisie), vérifier la réponse avant de continuer
     if (level4DialogueStep === 4) {
         checkLevel4Answer();
+    } else if (level4DialogueStep === 11) {
+        // Rediriger vers WhatsApp
+        window.location.href = 'https://wa.me/4915156684392';
     } else {
         level4DialogueStep++;
         updateLevel4Dialogue();
