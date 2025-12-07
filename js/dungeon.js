@@ -46,7 +46,7 @@ const blackSquare = {
     x: 0,
     y: 0,
     size: 12,
-    width: 3, // Largeur en tiles (3 carrés)
+    width: 1, // Largeur en tiles (1 carré - une seule colonne)
     height: 1, // Hauteur en tiles (1 carré)
     color: '#000000' // Noir
 };
@@ -126,28 +126,29 @@ const labyrinthMapWithDoor = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-// Niveau 4 : Couloir vertical avec blocs rouges de chaque côté (0 = sol, 1 = mur, 3 = bloc rouge)
-// Le joueur est au milieu, avec des blocs rouges remplis de chaque côté comme un boss fight
+// Niveau 4 : Une seule ligne verticale libre au milieu, tout le reste rempli de carrés rouges
+// (0 = sol, 1 = mur, 3 = bloc rouge)
+// Le carré noir est au milieu de cette ligne verticale
 const lineMap = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
-    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,0,0,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
+    [1,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1],
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
@@ -412,16 +413,16 @@ export function initDungeonLevel4() {
     }
     ctx.imageSmoothingEnabled = false;
     
-    // Aller directement au niveau 4 (couloir vertical)
+    // Aller directement au niveau 4 (ligne verticale unique)
     currentLevel = 4;
-    // Repositionner le joueur au milieu horizontalement, en bas verticalement
+    // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
     player.x = 14 * tileSize; // Milieu horizontal (colonne 14)
     player.y = 18 * tileSize; // En bas (ligne 18)
-    // Positionner le carré noir au milieu vertical (prend 3 carrés de largeur)
-    blackSquare.x = 13 * tileSize; // Commence à la colonne 13 (prend 13, 14, 15)
+    // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
+    blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
     blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
     // Positionner Jenny en haut au milieu
-    jenny.x = 14 * tileSize; // Milieu horizontal
+    jenny.x = 14 * tileSize; // Colonne 14 (milieu)
     jenny.y = 1 * tileSize; // En haut (ligne 1)
     
     // Réinitialiser les flags
@@ -580,7 +581,8 @@ function update() {
         let canPass = (centerTile !== 1 && centerTile !== 2 && centerTile !== 3) && freeCorners >= 3;
         
         // Vérifier la collision avec le carré noir dans le niveau 4 (avant de permettre le mouvement)
-        if (canPass && currentLevel === 4) {
+        // Permettre au joueur de se rapprocher, mais bloquer et déclencher le dialogue s'il entre en collision
+        if (canPass && currentLevel === 4 && !blackSquareCollisionHandled) {
             const blackWidth = blackSquare.width * tileSize;
             const blackHeight = blackSquare.height * tileSize;
             const playerLeft = newX;
@@ -593,12 +595,16 @@ function update() {
             const blackTop = blackSquare.y;
             const blackBottom = blackSquare.y + blackHeight;
             
-            // Collision AABB - si collision, bloquer le mouvement
-            const wouldCollide = !(playerRight < blackLeft || playerLeft > blackRight || playerBottom < blackTop || playerTop > blackBottom);
+            // Collision AABB - avec une marge pour détecter la proximité
+            const margin = 2; // Marge de détection
+            const wouldCollide = !(playerRight < blackLeft - margin || playerLeft > blackRight + margin || playerBottom < blackTop - margin || playerTop > blackBottom + margin);
             
-            if (wouldCollide && !blackSquareCollisionHandled) {
-                // Bloquer le mouvement si on n'a pas encore déclenché le dialogue
+            if (wouldCollide) {
+                // Bloquer le mouvement et déclencher le dialogue
                 canPass = false;
+                blackSquareCollisionHandled = true;
+                console.log("Collision avec le carré noir détectée, déclenchement du dialogue");
+                showLevel4Dialogue();
             }
         }
         
@@ -639,50 +645,26 @@ function update() {
         if (tileY >= 0 && tileY < map.length && tileX >= 0 && tileX < map[0].length) {
             // Vérifier si on est dans la zone de la porte (en haut, colonnes 13-15)
             if (tileY === 0 && tileX >= 13 && tileX <= 15) {
-                // Entré dans la porte - passer au niveau 4 (couloir vertical)
+                // Entré dans la porte - passer au niveau 4 (ligne verticale unique)
                 currentLevel = 4;
-                // Repositionner le joueur au milieu horizontalement, en bas verticalement
-                player.x = 14 * tileSize; // Milieu horizontal (colonne 14)
+                // Réinitialiser le flag de collision
+                blackSquareCollisionHandled = false;
+                level4DialogueStep = 0;
+                // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
+                player.x = 14 * tileSize; // Colonne 14 (milieu)
                 player.y = 18 * tileSize; // En bas (ligne 18)
-                // Positionner le carré noir au milieu vertical (prend 3 carrés de largeur)
-                blackSquare.x = 13 * tileSize; // Commence à la colonne 13 (prend 13, 14, 15)
+                // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
+                blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
                 blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
                 // Positionner Jenny en haut au milieu
-                jenny.x = 14 * tileSize; // Milieu horizontal
+                jenny.x = 14 * tileSize; // Colonne 14 (milieu)
                 jenny.y = 1 * tileSize; // En haut (ligne 1)
             }
         }
     }
     
-    // Vérifier si on atteint le carré noir dans le niveau 4
-    if (currentLevel === 4) {
-        const playerCenterX = player.x + player.size / 2;
-        const playerCenterY = player.y + player.size / 2;
-        const blackWidth = blackSquare.width * tileSize;
-        const blackHeight = blackSquare.height * tileSize;
-        const blackCenterX = blackSquare.x + blackWidth / 2;
-        const blackCenterY = blackSquare.y + blackHeight / 2;
-        
-        // Vérifier la collision avec un rectangle (le carré noir fait 3 tiles de large)
-        const playerLeft = player.x;
-        const playerRight = player.x + player.size;
-        const playerTop = player.y;
-        const playerBottom = player.y + player.size;
-        
-        const blackLeft = blackSquare.x;
-        const blackRight = blackSquare.x + blackWidth;
-        const blackTop = blackSquare.y;
-        const blackBottom = blackSquare.y + blackHeight;
-        
-        // Collision AABB (Axis-Aligned Bounding Box)
-        const isColliding = !(playerRight < blackLeft || playerLeft > blackRight || playerBottom < blackTop || playerTop > blackBottom);
-        
-        if (isColliding && !blackSquareCollisionHandled) {
-            // Collision avec le carré noir - démarrer le dialogue
-            blackSquareCollisionHandled = true;
-            // Ne pas arrêter le jeu, juste afficher le dialogue
-            showLevel4Dialogue();
-        }
+    // Note: La détection de collision avec le carré noir est maintenant gérée dans le code de prévention de mouvement
+    // (lignes 584-603) pour éviter que le joueur ne puisse jamais déclencher le dialogue
         
         // Vérifier si on atteint Jenny à la fin
         const jennyCenterX = jenny.x + jenny.size / 2;
