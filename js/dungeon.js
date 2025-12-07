@@ -477,10 +477,6 @@ tileSprite.onerror = function() {
 function getCurrentMap() {
     if (currentLevel === 1) {
         return dungeonMap;
-    } else if (currentLevel === 2) {
-        return labyrinthMap;
-    } else if (currentLevel === 3) {
-        return labyrinthMapWithDoor; // Niveau 3 avec porte
     } else {
         return lineMap; // Niveau 4 : ligne droite
     }
@@ -514,31 +510,32 @@ export function initDungeon() {
     }
     ctx.imageSmoothingEnabled = false;
     
-    // Réinitialiser au niveau 1
-    currentLevel = 1;
-    player.x = 32;
-    player.y = 32;
-    jennySoundPlayed = false;
-    jennySoundHeard = false;
-    canMove = false; // Bloquer le mouvement jusqu'à la fin du dialogue
+    // Aller directement au niveau 4 (dernier couloir)
+    currentLevel = 4;
+    // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
+    player.x = 14 * tileSize; // Colonne 14 (milieu)
+    player.y = 18 * tileSize; // En bas (ligne 18)
+    // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
+    blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
+    blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
+    // Positionner Jenny en haut au milieu
+    jenny.x = 14 * tileSize; // Colonne 14 (milieu)
+    jenny.y = 1 * tileSize; // En haut (ligne 1)
     
-    // Afficher le message d'instruction et les boutons pour mobile au niveau 1
+    // Réinitialiser les flags
+    jennySoundPlayed = false;
+    jennySoundHeard = true; // Permettre le mouvement directement
+    canMove = true;
+    traumaMessageShown = false;
+    level4DialogueStep = 0;
+    blackSquareCollisionHandled = false;
+    jennyLevel4Reached = false;
+    
+    // Afficher les boutons pour mobile
     const isMobileCheck = window.innerWidth <= 768;
     if (isMobileCheck) {
         setTimeout(() => {
-            const instructionMsg = document.getElementById('mobile-control-instruction');
             const dpad = document.getElementById('mobile-dpad');
-            if (currentLevel === 1) {
-                if (instructionMsg) {
-                    instructionMsg.classList.remove('hidden');
-                    // Masquer après 5 secondes ou au premier mouvement
-                    setTimeout(() => {
-                        if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
-                            instructionMsg.classList.add('hidden');
-                        }
-                    }, 5000);
-                }
-            }
             if (dpad) {
                 dpad.classList.remove('hidden');
                 // S'assurer que les boutons sont configurés
@@ -546,17 +543,6 @@ export function initDungeon() {
             }
         }, 500); // Attendre un peu pour que le canvas soit prêt
     }
-    
-    // Position de Jenny à la fin du labyrinthe
-    // Positionner Jenny au centre en bas du labyrinthe (deux chemins y mènent)
-    // Colonne 14-15 est accessible depuis deux chemins (gauche et droite)
-    jenny.x = 14 * tileSize + 2; // Centre horizontal avec petit offset
-    jenny.y = 18 * tileSize + 2; // Presque en bas (ligne 18) avec petit offset
-    
-    // Jouer le son de Jenny une fois au démarrage
-    setTimeout(() => {
-        playJennySound();
-    }, 1000); // Attendre 1 seconde avant de jouer le son
     
     // Ajouter les écouteurs de clavier
     window.addEventListener('keydown', (e) => {
@@ -772,33 +758,24 @@ export function initDungeonLevel4() {
     loop();
 }
 
-// Fonction pour changer de niveau
+// Fonction pour changer de niveau (maintenant passe directement au niveau 4)
 function changeLevel() {
-    currentLevel = 2;
-    // Position de départ dans le labyrinthe (en haut à gauche, sur une case libre)
-    // Colonne 1, ligne 1 est libre dans labyrinthMap
-    player.x = 1 * tileSize;
-    player.y = 1 * tileSize;
+    // Passer directement au niveau 4 (dernier couloir)
+    currentLevel = 4;
+    // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
+    player.x = 14 * tileSize; // Colonne 14 (milieu)
+    player.y = 18 * tileSize; // En bas (ligne 18)
+    // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
+    blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
+    blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
+    // Positionner Jenny en haut au milieu
+    jenny.x = 14 * tileSize; // Colonne 14 (milieu)
+    jenny.y = 1 * tileSize; // En haut (ligne 1)
     
-    // Arrêter le son de Jenny si il joue encore
-    if (jennySoundAudio) {
-        jennySoundAudio.pause();
-    }
-    
-    // Jouer le son de pleur en boucle dans le donjon 2
-    if (!cryAudio) {
-        cryAudio = document.getElementById('cry-audio');
-    }
-    if (cryAudio) {
-        cryAudio.volume = 0.3;
-        cryAudio.loop = true;
-        const playPromise = cryAudio.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(e => {
-                console.log("Impossible de jouer le son de pleur", e);
-            });
-        }
-    }
+    // Réinitialiser les flags
+    blackSquareCollisionHandled = false;
+    level4DialogueStep = 0;
+    jennyLevel4Reached = false;
 }
 
 // Fonction de mise à jour
@@ -960,7 +937,7 @@ function update() {
         const tile3 = (tileY2 >= 0 && tileY2 < map.length && tileX1 >= 0 && tileX1 < map[0].length) ? map[tileY2][tileX1] : 1;
         const tile4 = (tileY2 >= 0 && tileY2 < map.length && tileX2 >= 0 && tileX2 < map[0].length) ? map[tileY2][tileX2] : 1;
         
-        // Vérifier si on entre dans la porte (niveau 1)
+        // Vérifier si on entre dans la porte (niveau 1) - maintenant passe directement au niveau 4
         if (currentLevel === 1 && (centerTile === 2 || tile1 === 2 || tile2 === 2 || tile3 === 2 || tile4 === 2)) {
             changeLevel();
             return;
@@ -1005,54 +982,6 @@ function update() {
         }
     }
     
-    // Vérifier si on atteint Jenny (niveau 2)
-    if (currentLevel === 2) {
-        // Vérifier la collision avec Jenny en utilisant les rectangles
-        const playerCenterX = player.x + player.size / 2;
-        const playerCenterY = player.y + player.size / 2;
-        const jennyCenterX = jenny.x + jenny.size / 2;
-        const jennyCenterY = jenny.y + jenny.size / 2;
-        
-        const distance = Math.sqrt(
-            Math.pow(playerCenterX - jennyCenterX, 2) + Math.pow(playerCenterY - jennyCenterY, 2)
-        );
-        
-        // Distance de collision : plus permissive pour faciliter la détection
-        // On utilise la somme des tailles pour être sûr de détecter la collision
-        const collisionDistance = (player.size + jenny.size) / 2 + 4; // +4 pixels de marge
-        
-        if (distance <= collisionDistance && !traumaMessageShown) {
-            // Atteint le carré rose - afficher le message traumatisme
-            console.log("Collision avec Jenny détectée ! Distance:", distance, "Seuil:", collisionDistance);
-            showTraumaMessage();
-        }
-    }
-    
-    // Vérifier si on entre dans la porte du niveau 3 (en haut)
-    if (currentLevel === 3) {
-        const tileX = Math.floor(player.x / tileSize);
-        const tileY = Math.floor(player.y / tileSize);
-        const map = getCurrentMap();
-        if (tileY >= 0 && tileY < map.length && tileX >= 0 && tileX < map[0].length) {
-            // Vérifier si on est dans la zone de la porte (en haut, colonnes 13-15)
-            if (tileY === 0 && tileX >= 13 && tileX <= 15) {
-                // Entré dans la porte - passer au niveau 4 (ligne verticale unique)
-                currentLevel = 4;
-                // Réinitialiser le flag de collision
-                blackSquareCollisionHandled = false;
-                level4DialogueStep = 0;
-                // Repositionner le joueur au milieu horizontalement (colonne 14), en bas verticalement
-                player.x = 14 * tileSize; // Colonne 14 (milieu)
-                player.y = 18 * tileSize; // En bas (ligne 18)
-                // Positionner le carré noir au milieu vertical, colonne 14 (une seule colonne libre)
-                blackSquare.x = 14 * tileSize; // Colonne 14 (milieu)
-                blackSquare.y = 9 * tileSize; // Milieu vertical (ligne 9)
-                // Positionner Jenny en haut au milieu
-                jenny.x = 14 * tileSize; // Colonne 14 (milieu)
-                jenny.y = 1 * tileSize; // En haut (ligne 1)
-            }
-        }
-    }
     
     // Note: La détection de collision avec le carré noir est maintenant gérée dans le code de prévention de mouvement
     // (lignes 584-603) pour éviter que le joueur ne puisse jamais déclencher le dialogue
@@ -1127,14 +1056,6 @@ function draw() {
             
             if (map[y][x] === 1) {
                 // Mur - toujours utiliser les couleurs pour le niveau 2 pour garantir la visibilité
-                if (currentLevel === 2 || currentLevel === 3) {
-                    // Murs très visibles dans le labyrinthe (rouge foncé avec contour)
-                    ctx.fillStyle = '#5a1a1a';
-                    ctx.fillRect(tileX, tileY, tileSize, tileSize);
-                    ctx.strokeStyle = '#8b0000';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(tileX, tileY, tileSize, tileSize);
-                    // Ajouter un motif pour plus de visibilité
                     ctx.fillStyle = '#3a0a0a';
                     ctx.fillRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
                     // Ajouter des détails pour plus de contraste
@@ -1224,25 +1145,6 @@ function draw() {
         }
     }
     
-    // Dessiner Jenny si on est dans le labyrinthe initial (niveau 2)
-    if (currentLevel === 2) {
-        drawJenny();
-    }
-    
-    // Dessiner la porte si on est dans le niveau 3
-    if (currentLevel === 3) {
-        const doorX = 13 * tileSize;
-        const doorY = 0;
-        ctx.fillStyle = '#8b4513';
-        ctx.fillRect(doorX, doorY, tileSize * 3, tileSize);
-        ctx.strokeStyle = '#654321';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(doorX, doorY, tileSize * 3, tileSize);
-        // Poignées
-        ctx.fillStyle = '#ffd700';
-        ctx.fillRect(doorX + 10, doorY + 4, 2, 4);
-        ctx.fillRect(doorX + tileSize * 3 - 12, doorY + 4, 2, 4);
-    }
     
     // Dessiner le carré noir et Jenny si on est dans le niveau 4
     if (currentLevel === 4) {
@@ -1512,14 +1414,9 @@ function checkLevel4Answer() {
     
     const answer = input.value.toLowerCase().trim();
     
-    if (answer === 'traumatisme' || answer === 'traumatismes') {
-        // Réponse correcte - continuer
-        level4DialogueStep = 5;
-        updateLevel4Dialogue();
-    } else {
-        // Réponse incorrecte - déclencher le jumpscare "vas-t'en"
-        triggerJumpscare();
-    }
+    // Passer directement à l'étape suivante sans vérifier la réponse
+    level4DialogueStep = 5;
+    updateLevel4Dialogue();
 }
 
 // Fonction pour vérifier les informations sur Jordan

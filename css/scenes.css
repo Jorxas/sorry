@@ -86,11 +86,14 @@
     width: 100%;
     height: 100vh;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     background: #000;
     opacity: 0;
     transition: opacity 1s ease-in-out;
+    margin: 0;
+    padding: 0;
 }
 
 #scene-dungeon:not(.hidden) {
@@ -100,14 +103,16 @@
 #dungeonCanvas {
     display: block;
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    flex: 1;
+    object-fit: cover;
     box-shadow: 0 0 30px rgba(139, 0, 0, 0.5);
     image-rendering: pixelated; /* Rendu pixelisé style Game Boy */
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
     background-color: #000; /* Force le fond noir */
     color-scheme: dark; /* Force le mode sombre */
+    margin: 0;
+    padding: 0;
 }
 
 @media (max-width: 768px) {
@@ -116,23 +121,22 @@
         margin: 0;
         width: 100vw;
         height: 100vh;
-        position: fixed;
-        top: 0;
-        left: 0;
+        position: relative;
         touch-action: none; /* Empêcher le scroll par défaut */
         display: flex;
         flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
     }
     
     #dungeonCanvas {
         width: 100vw !important;
-        height: calc(100vh - 180px) !important; /* Prend tout l'écran moins l'espace pour les boutons */
+        flex: 1 !important;
         object-fit: cover !important;
         position: relative !important;
-        top: 0 !important;
-        left: 0 !important;
         border: none !important;
-        flex: 1;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     #dungeon-dialogue {
@@ -143,14 +147,15 @@
     }
     
     #mobile-dpad {
-        display: block !important;
-        position: fixed !important;
-        bottom: 20px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        position: relative !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 15px !important;
         z-index: 1500 !important;
         background: rgba(0, 0, 0, 0.7) !important;
-        padding: 15px !important;
         border-radius: 15px !important;
         border: 2px solid rgba(139, 0, 0, 0.8) !important;
         backdrop-filter: blur(10px) !important;
