@@ -12,13 +12,14 @@ export function startGame() {
         console.error("scenes.intro non trouvé");
         return;
     }
-    if (!scenes.torches) {
-        console.error("scenes.torches non trouvé");
+    if (!scenes.dungeon) {
+        console.error("scenes.dungeon non trouvé");
         return;
     }
+    // Aller directement au donjon (comme si on avait cliqué sur "Aider Jordan")
     scenes.intro.classList.add('hidden');
-    scenes.torches.classList.remove('hidden');
-    playAmbientAudio();
+    scenes.dungeon.classList.remove('hidden');
+    initDungeon();
 }
 
 
