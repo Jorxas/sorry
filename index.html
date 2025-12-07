@@ -95,6 +95,11 @@
     <div id="scene-dungeon" class="hidden" style="text-align: center;">
         <canvas id="dungeonCanvas" style="border: 2px solid #8b0000; background: #000; max-width: 100%; height: auto;"></canvas>
         
+        <!-- Message d'instruction pour le contrôle mobile -->
+        <div id="mobile-control-instruction" class="hidden mobile-only" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.8); padding: 15px 25px; border: 2px solid #8b0000; border-radius: 10px; max-width: 90%; z-index: 1500; text-align: center;">
+            <p style="color: #e0e0e0; font-family: 'Special Elite', monospace; font-size: 1rem; margin: 0;">👆 Clique vers où tu veux te déplacer</p>
+        </div>
+        
         <!-- Dialogue Jordan dans le donjon -->
         <div id="dungeon-dialogue" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 500px; z-index: 1000;">
             <p id="dungeon-dialogue-text" style="color: #e0e0e0; margin-bottom: 15px; font-family: 'Special Elite', monospace;">Jordan : Tu as entendu ça ?</p>

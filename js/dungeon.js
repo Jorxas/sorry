@@ -183,32 +183,71 @@ function playDoorSound() {
 }
 
 // Fonction pour gérer les touches mobiles
-// Variables pour les contrôles tactiles par glissement
-let touchStartX = 0;
-let touchStartY = 0;
-let touchEndX = 0;
-let touchEndY = 0;
+// Variables pour le système de clic/touch pour se déplacer
+let targetX = null;
+let targetY = null;
+let isMovingToTarget = false;
 
-// Fonction pour gérer les contrôles tactiles par glissement
+// Fonction pour convertir les coordonnées écran en coordonnées du monde du jeu
+function screenToWorld(screenX, screenY) {
+    if (!canvas) return { x: 0, y: 0 };
+    
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const worldX = (screenX - rect.left) * scaleX;
+    const worldY = (screenY - rect.top) * scaleY;
+    
+    return { x: worldX, y: worldY };
+}
+
+// Fonction pour vérifier si le chemin en ligne droite est libre
+function isPathClear(startX, startY, endX, endY, map) {
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const steps = Math.ceil(distance / (tileSize / 2)); // Vérifier tous les demi-tiles
+    
+    for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const checkX = startX + dx * t;
+        const checkY = startY + dy * t;
+        
+        const tileX = Math.floor(checkX / tileSize);
+        const tileY = Math.floor(checkY / tileSize);
+        
+        if (tileY >= 0 && tileY < map.length && tileX >= 0 && tileX < map[0].length) {
+            const tile = map[tileY][tileX];
+            // Vérifier si c'est un mur, une porte ou un bloc rouge
+            if (tile === 1 || tile === 2 || tile === 3) {
+                return false;
+            }
+        } else {
+            return false; // Hors limites
+        }
+    }
+    
+    return true;
+}
+
+// Fonction pour gérer les contrôles tactiles par clic/touch
 function setupTouchControls() {
     // Utiliser la scène du donjon pour les contrôles tactiles (tout l'écran)
     const dungeonScene = document.getElementById('scene-dungeon');
-    if (!dungeonScene) return;
+    if (!dungeonScene || !canvas) return;
     
+    // Gérer les touches tactiles
     dungeonScene.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const touch = e.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
+        handleClickOrTouch(touch.clientX, touch.clientY);
     }, { passive: false });
     
-    dungeonScene.addEventListener('touchend', (e) => {
+    // Gérer les clics souris (pour desktop aussi)
+    canvas.addEventListener('click', (e) => {
         e.preventDefault();
-        const touch = e.changedTouches[0];
-        touchEndX = touch.clientX;
-        touchEndY = touch.clientY;
-        
-        handleSwipe();
+        handleClickOrTouch(e.clientX, e.clientY);
     }, { passive: false });
     
     dungeonScene.addEventListener('touchmove', (e) => {
@@ -216,45 +255,34 @@ function setupTouchControls() {
     }, { passive: false });
 }
 
-function handleSwipe() {
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    const minSwipeDistance = 30; // Distance minimale pour détecter un glissement
+function handleClickOrTouch(clientX, clientY) {
+    if (!canvas) return;
     
-    // Réinitialiser toutes les touches
-    keys['ArrowUp'] = false;
-    keys['ArrowDown'] = false;
-    keys['ArrowLeft'] = false;
-    keys['ArrowRight'] = false;
+    // Convertir les coordonnées écran en coordonnées du monde
+    const worldPos = screenToWorld(clientX, clientY);
     
-    // Détecter la direction du glissement
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // Glissement horizontal
-        if (Math.abs(deltaX) > minSwipeDistance) {
-            if (deltaX > 0) {
-                keys['ArrowRight'] = true;
-            } else {
-                keys['ArrowLeft'] = true;
-            }
-        }
-    } else {
-        // Glissement vertical
-        if (Math.abs(deltaY) > minSwipeDistance) {
-            if (deltaY > 0) {
-                keys['ArrowDown'] = true;
-            } else {
-                keys['ArrowUp'] = true;
-            }
-        }
+    // Vérifier si on est sur mobile
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) return; // Sur desktop, garder les contrôles clavier
+    
+    // Masquer le message d'instruction au premier clic
+    const instructionMsg = document.getElementById('mobile-control-instruction');
+    if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
+        instructionMsg.classList.add('hidden');
     }
     
-    // Réinitialiser après un court délai pour permettre le mouvement continu
-    setTimeout(() => {
-        keys['ArrowUp'] = false;
-        keys['ArrowDown'] = false;
-        keys['ArrowLeft'] = false;
-        keys['ArrowRight'] = false;
-    }, 100);
+    const map = getCurrentMap();
+    
+    // Vérifier si le chemin est libre
+    const playerCenterX = player.x + player.size / 2;
+    const playerCenterY = player.y + player.size / 2;
+    
+    if (isPathClear(playerCenterX, playerCenterY, worldPos.x, worldPos.y, map)) {
+        // Le chemin est libre, définir la cible
+        targetX = worldPos.x - player.size / 2; // Ajuster pour le centre du joueur
+        targetY = worldPos.y - player.size / 2;
+        isMovingToTarget = true;
+    }
 }
 
 export function handleMobileTouch(key, isPressed) {
@@ -397,6 +425,23 @@ export function initDungeon() {
     jennySoundPlayed = false;
     jennySoundHeard = false;
     canMove = false; // Bloquer le mouvement jusqu'à la fin du dialogue
+    
+    // Afficher le message d'instruction pour mobile au niveau 1
+    const isMobileCheck = window.innerWidth <= 768;
+    if (isMobileCheck) {
+        setTimeout(() => {
+            const instructionMsg = document.getElementById('mobile-control-instruction');
+            if (instructionMsg && currentLevel === 1) {
+                instructionMsg.classList.remove('hidden');
+                // Masquer après 5 secondes ou au premier mouvement
+                setTimeout(() => {
+                    if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
+                        instructionMsg.classList.add('hidden');
+                    }
+                }, 5000);
+            }
+        }, 500); // Attendre un peu pour que le canvas soit prêt
+    }
     
     // Position de Jenny à la fin du labyrinthe
     // Positionner Jenny au centre en bas du labyrinthe (deux chemins y mènent)
@@ -666,17 +711,87 @@ function update() {
     let newX = player.x;
     let newY = player.y;
     
-    if (keys['ArrowUp'] || keys['w'] || keys['W']) {
-        newY -= player.speed;
-    }
-    if (keys['ArrowDown'] || keys['s'] || keys['S']) {
-        newY += player.speed;
-    }
-    if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
-        newX -= player.speed;
-    }
-    if (keys['ArrowRight'] || keys['d'] || keys['D']) {
-        newX += player.speed;
+    // Vérifier si on est sur mobile et si on a une cible
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile && isMovingToTarget && targetX !== null && targetY !== null) {
+        // Déplacer vers la cible en ligne droite
+        const dx = targetX - player.x;
+        const dy = targetY - player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > player.speed) {
+            // Se déplacer vers la cible
+            const angle = Math.atan2(dy, dx);
+            newX = player.x + Math.cos(angle) * player.speed;
+            newY = player.y + Math.sin(angle) * player.speed;
+            
+            // Vérifier si on rencontre un obstacle
+            const playerCenterX = newX + player.size / 2;
+            const playerCenterY = newY + player.size / 2;
+            const tileX = Math.floor(playerCenterX / tileSize);
+            const tileY = Math.floor(playerCenterY / tileSize);
+            
+            if (tileY >= 0 && tileY < map.length && tileX >= 0 && tileX < map[0].length) {
+                const tile = map[tileY][tileX];
+                if (tile === 1 || tile === 2 || tile === 3) {
+                    // Obstacle rencontré, arrêter le mouvement
+                    isMovingToTarget = false;
+                    targetX = null;
+                    targetY = null;
+                    return;
+                }
+            }
+            
+            // Vérifier aussi la collision avec le carré noir (niveau 4)
+            if (currentLevel === 4 && !blackSquareCollisionHandled) {
+                const blackWidth = blackSquare.width * tileSize;
+                const blackHeight = blackSquare.height * tileSize;
+                const playerLeft = newX;
+                const playerRight = newX + player.size;
+                const playerTop = newY;
+                const playerBottom = newY + player.size;
+                
+                const blackLeft = blackSquare.x;
+                const blackRight = blackSquare.x + blackWidth;
+                const blackTop = blackSquare.y;
+                const blackBottom = blackSquare.y + blackHeight;
+                
+                const margin = 2;
+                const wouldCollide = !(playerRight < blackLeft - margin || playerLeft > blackRight + margin || playerBottom < blackTop - margin || playerTop > blackBottom + margin);
+                
+                if (wouldCollide) {
+                    // Collision avec le carré noir, arrêter le mouvement et déclencher le dialogue
+                    isMovingToTarget = false;
+                    targetX = null;
+                    targetY = null;
+                    blackSquareCollisionHandled = true;
+                    showLevel4Dialogue();
+                    return;
+                }
+            }
+        } else {
+            // Atteint la cible
+            newX = targetX;
+            newY = targetY;
+            isMovingToTarget = false;
+            targetX = null;
+            targetY = null;
+        }
+    } else {
+        // Contrôles clavier classiques (desktop)
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+            newY -= player.speed;
+        }
+        if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+            newY += player.speed;
+        }
+        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+            newX -= player.speed;
+        }
+        if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+            newX += player.speed;
+        }
     }
     
     // Collision avec les murs - système amélioré pour faciliter les virages
