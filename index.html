@@ -55,7 +55,11 @@
     <!-- SCENE 0: INTRO -->
     <div id="scene-intro" style="text-align: center;">
         <p style="color: #666; font-size: 0.9rem;">(Mets le son pour une meilleure expérience)</p>
-        <button onclick="startGame()">COMMENCER</button>
+        <div id="game-mode-selection" style="margin-top: 20px;">
+            <button onclick="startGame()" style="margin: 10px; padding: 15px 30px; font-size: 1.1rem; min-height: 44px; min-width: 150px;">JOUER NORMALEMENT</button>
+            <br>
+            <button onclick="skipToLevel4()" style="margin: 10px; padding: 15px 30px; font-size: 1.1rem; min-height: 44px; min-width: 150px;">ALLER AU DERNIER COULOIR</button>
+        </div>
     </div>
 
     <!-- SCENE 1: TORCHES -->
@@ -125,6 +129,23 @@
         <!-- Dialogue Jordan après le message traumatisme -->
         <div id="jordan-dialogue-trauma" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 500px; z-index: 1000;">
             <p id="jordan-trauma-text" style="color: #e0e0e0; font-family: 'Special Elite', monospace;">Jordan : Ce n'était pas Jenny...</p>
+        </div>
+        
+        <!-- Dialogue niveau 4 : Fierté et Jordan -->
+        <div id="dungeon-dialogue-level4" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 600px; z-index: 1000; pointer-events: none;">
+            <p id="level4-dialogue-text" style="color: #e0e0e0; font-family: 'Special Elite', monospace; pointer-events: none;"></p>
+            <div id="level4-input-area" class="hidden" style="margin-top: 15px; pointer-events: auto;">
+                <input type="text" id="level4-user-input" autocomplete="off" placeholder="..." style="background: transparent; border: none; border-bottom: 2px solid #8b0000; color: white; font-family: 'Special Elite', monospace; font-size: 1.2rem; text-align: center; outline: none; width: 80%; padding: 10px;">
+            </div>
+            <div id="level4-next-btn" class="hidden" style="margin-top: 15px; pointer-events: auto;">
+                <button id="level4-continue-btn" onclick="nextLevel4Dialogue()" style="background: #222; border: 1px solid #444; color: white; padding: 15px 30px; font-family: 'Special Elite', monospace; cursor: pointer; font-size: 1.1rem; min-height: 44px; min-width: 120px; touch-action: manipulation;">CONTINUER</button>
+            </div>
+            <div id="level4-question-area" class="hidden" style="margin-top: 15px; pointer-events: auto;">
+                <p style="color: #e0e0e0; font-family: 'Special Elite', monospace; font-size: 1.1rem;">Quelle information connaissez-vous sur Jordan ?</p>
+                <input type="text" id="level4-info-input" autocomplete="off" placeholder="..." style="background: transparent; border: none; border-bottom: 2px solid #8b0000; color: white; font-family: 'Special Elite', monospace; font-size: 1.2rem; text-align: center; outline: none; width: 80%; padding: 10px; margin-top: 15px;">
+                <br>
+                <button onclick="submitLevel4Info()" style="margin-top: 10px; background: #222; border: 1px solid #444; color: white; padding: 15px 30px; font-family: 'Special Elite', monospace; cursor: pointer; font-size: 1.1rem; min-height: 44px; min-width: 120px; touch-action: manipulation;">VALIDER</button>
+            </div>
         </div>
     </div>
 
