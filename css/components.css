@@ -27,6 +27,7 @@ input[type="text"] {
     margin-top: 20px;
     outline: none;
     width: 80%;
+    color-scheme: dark; /* Force le mode sombre */
 }
 
 button {

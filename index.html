@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#050505">
     <title>Réveil...</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
@@ -85,6 +87,11 @@
 
     <!-- SCENE 4: DUNGEON -->
     <div id="scene-dungeon" class="hidden" style="text-align: center;">
+        <!-- Message pour tourner le téléphone -->
+        <div id="rotate-message" class="mobile-only rotate-message">
+            <p>📱 Tournez votre téléphone en mode paysage</p>
+        </div>
+        
         <canvas id="dungeonCanvas" style="border: 2px solid #8b0000; background: #000; max-width: 100%; height: auto;"></canvas>
         
         <!-- Boutons de contrôle tactiles pour mobile -->
@@ -106,6 +113,19 @@
                 <button onclick="answerJennySound(true)" style="background: #222; border: 1px solid #444; color: white; padding: 10px 20px; font-family: 'Special Elite', monospace; cursor: pointer; transition: background 0.3s;">Oui</button>
                 <button onclick="answerJennySound(false)" style="background: #222; border: 1px solid #444; color: white; padding: 10px 20px; font-family: 'Special Elite', monospace; cursor: pointer; transition: background 0.3s;">Non</button>
             </div>
+        </div>
+        
+        <!-- Message traumatisme sur papier -->
+        <div id="trauma-message" class="hidden" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2000;">
+            <div class="paper-message">
+                <p class="paper-text">ça suffit</p>
+                <p class="paper-word">traumatisme</p>
+            </div>
+        </div>
+        
+        <!-- Dialogue Jordan après le message traumatisme -->
+        <div id="jordan-dialogue-trauma" class="hidden" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.9); padding: 20px; border: 2px solid #8b0000; border-radius: 10px; max-width: 500px; z-index: 1000;">
+            <p id="jordan-trauma-text" style="color: #e0e0e0; font-family: 'Special Elite', monospace;">Jordan : Ce n'était pas Jenny...</p>
         </div>
     </div>
 
