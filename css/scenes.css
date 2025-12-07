@@ -114,95 +114,29 @@
     #dungeonCanvas {
         width: 100vw !important;
         height: 100vh !important;
-        object-fit: cover !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        border: none;
-    }
-    
-    #scene-dungeon {
-        padding: 0;
-        margin: 0;
-    }
-}
-
-/* Boutons de contrôle mobile */
-.mobile-only {
-    display: none;
-}
-
-/* Message pour tourner le téléphone */
-.rotate-message {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-    font-size: 1.5rem;
-    color: #e0e0e0;
-    text-align: center;
-    font-family: 'Special Elite', monospace;
-}
-
-.rotate-message.hidden {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .mobile-only {
-        display: block;
-    }
-    
-    /* Afficher le message de rotation seulement en mode portrait */
-    @media (orientation: portrait) {
-        .rotate-message {
-            display: flex !important;
-        }
-        
-        #dungeonCanvas {
-            display: none !important;
-        }
-    }
-    
-    @media (orientation: landscape) {
-        .rotate-message {
-            display: none !important;
-        }
-        
-        #dungeonCanvas {
-            display: block !important;
-        }
-    }
-    
-    #dungeonCanvas {
-        width: 100vw !important;
-        height: 100vh !important;
-        object-fit: cover !important;
+        object-fit: contain !important;
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
         border: none !important;
     }
     
+    #scene-dungeon {
+        padding: 0;
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        touch-action: none; /* Empêcher le scroll par défaut */
+    }
     
     #dungeon-dialogue {
         max-width: 90vw !important;
         bottom: 80px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-    }
-    
-    #scene-dungeon {
-        position: relative;
-        overflow: hidden;
-        width: 100vw;
-        height: 100vh;
     }
 }
 

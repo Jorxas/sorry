@@ -191,16 +191,18 @@ let touchEndY = 0;
 
 // Fonction pour gérer les contrôles tactiles par glissement
 function setupTouchControls() {
-    if (!canvas) return;
+    // Utiliser la scène du donjon pour les contrôles tactiles (tout l'écran)
+    const dungeonScene = document.getElementById('scene-dungeon');
+    if (!dungeonScene) return;
     
-    canvas.addEventListener('touchstart', (e) => {
+    dungeonScene.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const touch = e.touches[0];
         touchStartX = touch.clientX;
         touchStartY = touch.clientY;
     }, { passive: false });
     
-    canvas.addEventListener('touchend', (e) => {
+    dungeonScene.addEventListener('touchend', (e) => {
         e.preventDefault();
         const touch = e.changedTouches[0];
         touchEndX = touch.clientX;
@@ -209,7 +211,7 @@ function setupTouchControls() {
         handleSwipe();
     }, { passive: false });
     
-    canvas.addEventListener('touchmove', (e) => {
+    dungeonScene.addEventListener('touchmove', (e) => {
         e.preventDefault();
     }, { passive: false });
 }
@@ -360,18 +362,9 @@ function getCurrentMap() {
     }
 }
 
-// Fonction pour vérifier l'orientation
+// Fonction pour vérifier l'orientation (plus utilisée, conservée pour compatibilité)
 function checkOrientation() {
-    const rotateMessage = document.getElementById('rotate-message');
-    if (rotateMessage) {
-        const isMobile = window.innerWidth <= 768;
-        const isPortrait = window.innerHeight > window.innerWidth;
-        if (isMobile && isPortrait) {
-            rotateMessage.classList.remove('hidden');
-        } else {
-            rotateMessage.classList.add('hidden');
-        }
-    }
+    // Plus besoin de vérifier l'orientation, le jeu fonctionne en mode portrait
 }
 
 // Initialiser le donjon
@@ -387,15 +380,9 @@ export function initDungeon() {
     // Adapter la taille du canvas selon l'appareil
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
-        // Sur mobile en mode paysage, prendre toute la taille de l'écran
-        if (window.innerHeight < window.innerWidth) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        } else {
-            // En mode portrait, utiliser les dimensions inversées
-            canvas.width = window.innerHeight;
-            canvas.height = window.innerWidth;
-        }
+        // Sur mobile, utiliser les dimensions de l'écran en mode portrait
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     } else {
         // Sur desktop, taille fixe
         canvas.width = 480;
@@ -436,16 +423,13 @@ export function initDungeon() {
         if (canvas && dungeonInitialized) {
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                const isPortrait = window.innerHeight > window.innerWidth;
-                if (!isPortrait) {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                }
+                // Sur mobile, utiliser les dimensions de l'écran
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             } else {
                 canvas.width = 480;
                 canvas.height = 320;
             }
-            checkOrientation();
         }
     });
     
@@ -475,13 +459,9 @@ export function initDungeonLevel3() {
     // Adapter la taille du canvas selon l'appareil
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
-        if (window.innerHeight < window.innerWidth) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        } else {
-            canvas.width = window.innerHeight;
-            canvas.height = window.innerWidth;
-        }
+        // Sur mobile, utiliser les dimensions de l'écran en mode portrait
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     } else {
         canvas.width = 480;
         canvas.height = 320;
@@ -518,16 +498,13 @@ export function initDungeonLevel3() {
         if (canvas && dungeonInitialized) {
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                const isPortrait = window.innerHeight > window.innerWidth;
-                if (!isPortrait) {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                }
+                // Sur mobile, utiliser les dimensions de l'écran
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             } else {
                 canvas.width = 480;
                 canvas.height = 320;
             }
-            checkOrientation();
         }
     });
     
@@ -557,13 +534,9 @@ export function initDungeonLevel4() {
     // Adapter la taille du canvas selon l'appareil
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
-        if (window.innerHeight < window.innerWidth) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        } else {
-            canvas.width = window.innerHeight;
-            canvas.height = window.innerWidth;
-        }
+        // Sur mobile, utiliser les dimensions de l'écran en mode portrait
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     } else {
         canvas.width = 480;
         canvas.height = 320;
@@ -605,16 +578,13 @@ export function initDungeonLevel4() {
         if (canvas && dungeonInitialized) {
             const isMobile = window.innerWidth <= 768;
             if (isMobile) {
-                const isPortrait = window.innerHeight > window.innerWidth;
-                if (!isPortrait) {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                }
+                // Sur mobile, utiliser les dimensions de l'écran
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
             } else {
                 canvas.width = 480;
                 canvas.height = 320;
             }
-            checkOrientation();
         }
     });
     
