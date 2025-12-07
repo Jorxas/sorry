@@ -291,6 +291,18 @@ export function handleMobileTouch(key, isPressed) {
     return false;
 }
 
+// Fonction pour gérer les boutons de direction mobile
+export function handleMobileDirection(key, isPressed) {
+    keys[key] = isPressed;
+    // Arrêter le mouvement vers la cible si on utilise les boutons
+    if (isPressed) {
+        isMovingToTarget = false;
+        targetX = null;
+        targetY = null;
+    }
+    return false;
+}
+
 // Son de Jenny
 let jennySoundAudio = null;
 
@@ -426,19 +438,25 @@ export function initDungeon() {
     jennySoundHeard = false;
     canMove = false; // Bloquer le mouvement jusqu'à la fin du dialogue
     
-    // Afficher le message d'instruction pour mobile au niveau 1
+    // Afficher le message d'instruction et les boutons pour mobile au niveau 1
     const isMobileCheck = window.innerWidth <= 768;
     if (isMobileCheck) {
         setTimeout(() => {
             const instructionMsg = document.getElementById('mobile-control-instruction');
-            if (instructionMsg && currentLevel === 1) {
-                instructionMsg.classList.remove('hidden');
-                // Masquer après 5 secondes ou au premier mouvement
-                setTimeout(() => {
-                    if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
-                        instructionMsg.classList.add('hidden');
-                    }
-                }, 5000);
+            const dpad = document.getElementById('mobile-dpad');
+            if (currentLevel === 1) {
+                if (instructionMsg) {
+                    instructionMsg.classList.remove('hidden');
+                    // Masquer après 5 secondes ou au premier mouvement
+                    setTimeout(() => {
+                        if (instructionMsg && !instructionMsg.classList.contains('hidden')) {
+                            instructionMsg.classList.add('hidden');
+                        }
+                    }, 5000);
+                }
+            }
+            if (dpad) {
+                dpad.classList.remove('hidden');
             }
         }, 500); // Attendre un peu pour que le canvas soit prêt
     }
@@ -529,6 +547,15 @@ export function initDungeonLevel3() {
     blackSquareCollisionHandled = false;
     jennyLevel4Reached = false;
     
+    // Afficher les boutons D-pad sur mobile
+    const isMobileCheck = window.innerWidth <= 768;
+    if (isMobileCheck) {
+        const dpad = document.getElementById('mobile-dpad');
+        if (dpad) {
+            dpad.classList.remove('hidden');
+        }
+    }
+    
     // Ajouter les écouteurs de clavier
     window.addEventListener('keydown', (e) => {
         keys[e.key] = true;
@@ -608,6 +635,15 @@ export function initDungeonLevel4() {
     level4DialogueStep = 0;
     blackSquareCollisionHandled = false;
     jennyLevel4Reached = false;
+    
+    // Afficher les boutons D-pad sur mobile
+    const isMobileCheck = window.innerWidth <= 768;
+    if (isMobileCheck) {
+        const dpad = document.getElementById('mobile-dpad');
+        if (dpad) {
+            dpad.classList.remove('hidden');
+        }
+    }
     
     // Ajouter les écouteurs de clavier
     window.addEventListener('keydown', (e) => {
@@ -711,10 +747,29 @@ function update() {
     let newX = player.x;
     let newY = player.y;
     
-    // Vérifier si on est sur mobile et si on a une cible
+    // Vérifier si on est sur mobile
     const isMobile = window.innerWidth <= 768;
     
-    if (isMobile && isMovingToTarget && targetX !== null && targetY !== null) {
+    // Sur mobile, vérifier d'abord si on utilise les boutons de direction
+    if (isMobile && (keys['ArrowUp'] || keys['ArrowDown'] || keys['ArrowLeft'] || keys['ArrowRight'])) {
+        // Utiliser les boutons de direction
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+            newY -= player.speed;
+        }
+        if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+            newY += player.speed;
+        }
+        if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+            newX -= player.speed;
+        }
+        if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+            newX += player.speed;
+        }
+        // Arrêter le mouvement vers la cible si on utilise les boutons
+        isMovingToTarget = false;
+        targetX = null;
+        targetY = null;
+    } else if (isMobile && isMovingToTarget && targetX !== null && targetY !== null) {
         // Déplacer vers la cible en ligne droite
         const dx = targetX - player.x;
         const dy = targetY - player.y;

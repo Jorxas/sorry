@@ -134,9 +134,22 @@
     
     #dungeon-dialogue {
         max-width: 90vw !important;
-        bottom: 80px !important;
+        bottom: 180px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
+    }
+    
+    #mobile-dpad {
+        display: block !important;
+    }
+    
+    .mobile-dpad-btn {
+        transition: background 0.2s, transform 0.1s;
+    }
+    
+    .mobile-dpad-btn:active {
+        background: rgba(139, 0, 0, 0.8) !important;
+        transform: scale(0.95);
     }
 }
 
