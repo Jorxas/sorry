@@ -21,6 +21,7 @@ export function startGame() {
     playAmbientAudio();
 }
 
+
 // Fonction pour aller directement au niveau 3 (labyrinthe avec porte)
 export function skipToLevel3() {
     console.log("skipToLevel3 appelé");
@@ -57,25 +58,35 @@ export function skipToLevel4() {
 
 // Exposer les fonctions globales nécessaires pour les onclick
 // S'assurer que les fonctions sont disponibles immédiatement
-window.startGame = startGame;
-window.lightTorch = lightTorch;
-window.lightCenterTorch = lightCenterTorch;
-window.submitAnswer = submitAnswer;
-window.nextDialogue = nextDialogue;
-window.helpJordan = helpJordan;
-window.refuseHelp = refuseHelp;
-window.fixHeart = fixHeart;
-window.answerJennySound = answerJennySound;
-window.handleMobileTouch = handleMobileTouch;
-window.handleMobileDirection = handleMobileDirection;
-window.nextLevel4Dialogue = nextLevel4Dialogue;
-window.submitLevel4Info = submitLevel4Info;
-window.skipToLevel3 = skipToLevel3;
-window.skipToLevel4 = skipToLevel4;
-
-// Vérifier que les fonctions sont bien exposées
-console.log("Fonctions exposées:", {
-    startGame: typeof window.startGame,
-    skipToLevel3: typeof window.skipToLevel3,
-    skipToLevel4: typeof window.skipToLevel4
-});
+try {
+    if (typeof window !== 'undefined') {
+        window.startGame = startGame;
+        window.lightTorch = lightTorch;
+        window.lightCenterTorch = lightCenterTorch;
+        window.submitAnswer = submitAnswer;
+        window.nextDialogue = nextDialogue;
+        window.helpJordan = helpJordan;
+        window.refuseHelp = refuseHelp;
+        window.fixHeart = fixHeart;
+        window.answerJennySound = answerJennySound;
+        window.handleMobileTouch = handleMobileTouch;
+        window.handleMobileDirection = handleMobileDirection;
+        window.nextLevel4Dialogue = nextLevel4Dialogue;
+        window.submitLevel4Info = submitLevel4Info;
+        window.skipToLevel3 = skipToLevel3;
+        window.skipToLevel4 = skipToLevel4;
+        
+        console.log("✅ Toutes les fonctions ont été exposées globalement");
+        
+        // Vérifier que les fonctions sont bien exposées
+        console.log("Fonctions exposées:", {
+            startGame: typeof window.startGame,
+            skipToLevel3: typeof window.skipToLevel3,
+            skipToLevel4: typeof window.skipToLevel4,
+            lightTorch: typeof window.lightTorch,
+            submitAnswer: typeof window.submitAnswer
+        });
+    }
+} catch (error) {
+    console.error("❌ Erreur lors de l'exposition des fonctions:", error);
+}
